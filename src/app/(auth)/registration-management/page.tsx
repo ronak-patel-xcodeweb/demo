@@ -13,7 +13,6 @@ import { Switch } from "@/components/ui/switch";
 import bcrypt from "bcryptjs";
 import { EllipsisVertical, Eye, Trash2 } from "lucide-react";
 import { useContext, useEffect, useState, useRef, useCallback } from "react";
-import { calculateActiveTickIndex } from "recharts/types/util/ChartUtils";
 import { toast } from "sonner";
 
 
