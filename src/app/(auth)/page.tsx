@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";

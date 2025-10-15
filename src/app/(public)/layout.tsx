@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import { DataTableContext } from "@/components/context/DataTableContext";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
