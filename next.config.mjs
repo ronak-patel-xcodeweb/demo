@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
+  // Removed experimental.appDir - it's stable in Next.js 15
   eslint: {
     ignoreDuringBuilds: true,
   },
