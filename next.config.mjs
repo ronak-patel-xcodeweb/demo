@@ -1,13 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    eslint: {
+  experimental: {
+    appDir: true,
+  },
+  eslint: {
     ignoreDuringBuilds: true,
   },
 
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
-    async redirects() {
+  async redirects() {
     return [
       {
         source: "/",
