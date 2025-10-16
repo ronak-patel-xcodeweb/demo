@@ -48,7 +48,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       suppressHydrationWarning
     >
       
-      <body className={`${inter.className} min-h-screen antialiased poppins raleway montserrat dark`}>
+      <body className={`${inter.className} min-h-screen antialiased  dark`}>
         <Toaster position="top-right" />
         {children}
       </body>
