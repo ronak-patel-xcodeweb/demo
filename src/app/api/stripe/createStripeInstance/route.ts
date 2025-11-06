@@ -41,7 +41,9 @@ export async function POST(req: Request) {
             metadata: {
                 paymentForUserId: data?.Id,
                 paymentTableId: data?.paymentTableId,
-                agentRequestTableId: data?.agentRequestTableId
+                agentRequestTableId: data?.agentRequestTableId,
+                userTableId: data?.userTableId,
+                serviceName: data?.serviceName
             },
             payment_intent_data: {
                 application_fee_amount: Math.round(amount * 100 * 0.33),
