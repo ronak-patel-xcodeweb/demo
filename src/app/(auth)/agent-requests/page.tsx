@@ -135,12 +135,15 @@ export default function AgentRequests() {
     const formData = new FormData();
     const agentRequestTableId = dataTables.find((t: any) => t?.table_name === "AgentRequests")?.id;
     const paymentTableId = dataTables.find((t: any) => t?.table_name === "Payment")?.id;
+    const userTableId = dataTables.find((t: any) => t?.table_name === "User")?.id;
     const payload = {
       Id: paymentForUserId?.AgentId,
       agentRequestTableId,
       paymentTableId,
+      userTableId,
       amount: paymentForUserId?.amount,
-      stripeAccountId: paymentForUserId?.stripeAccountId
+      stripeAccountId: paymentForUserId?.stripeAccountId,
+      serviceName: paymentForUserId?.serviceName
     }
     formData.append("data", JSON.stringify(payload))
     const res = await fetch('/api/stripe/createStripeInstance', {
@@ -282,7 +285,7 @@ grid-cols-[repeat(auto-fit,minmax(20rem,1fr))]
                       </Tooltip>
                     </TooltipProvider>) :
                     (
-                      <Button onClick={() => { setIsConfiramtion(true); setPaymentForUserId({ stripeAccountId: agent?.stripeAccountId, AgentId: agent?.Id, amount: getServicePrice(agent, agent?.Service) }) }} className="w-36 cursor-pointer" type="submit">
+                      <Button onClick={() => { setIsConfiramtion(true); setPaymentForUserId({ stripeAccountId: agent?.stripeAccountId, AgentId: agent?.Id, serviceName: getServiceName(agent, agent?.Service), amount: getServicePrice(agent, agent?.Service) }) }} className="w-36 cursor-pointer" type="submit">
                         Pay Now
                       </Button>
                     )}

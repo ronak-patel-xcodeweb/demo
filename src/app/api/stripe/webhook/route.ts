@@ -34,6 +34,7 @@ export async function POST(req: Request) {
             case "checkout.session.completed": {
                 const session = event.data.object as Stripe.Checkout.Session;
 
+                // Prepare the payload
                 const paymentData = {
                     Id: session.metadata?.paymentForUserId,
                     PaymentId: session.id,

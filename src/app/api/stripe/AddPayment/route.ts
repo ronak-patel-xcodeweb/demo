@@ -7,7 +7,7 @@ import { env } from 'process';
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { data, agentRequestTableId, paymentTableId, userTableId, serviceName } = body;
+        const { data, agentRequestTableId, paymentTableId, userTableId } = body;
 
         if (!data || !agentRequestTableId || !paymentTableId || !userTableId) {
             return NextResponse.json({
