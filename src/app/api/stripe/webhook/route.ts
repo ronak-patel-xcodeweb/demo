@@ -25,7 +25,7 @@ export async function POST(req: Request) {
             process.env.STRIPE_WEBHOOK_SECRET!
         );
     } catch (err: any) {
-        console.error("❌ Webhook signature verification failed:", err.message);
+        console.error("Webhook signature verification failed:", err.message);
         return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
     }
 
@@ -33,17 +33,15 @@ export async function POST(req: Request) {
         switch (event.type) {
             case "checkout.session.completed": {
                 const session = event.data.object as Stripe.Checkout.Session;
-                console.log("✅ Checkout complete:", session.id);
 
-                // Prepare the payload
                 const paymentData = {
                     Id: session.metadata?.paymentForUserId,
                     PaymentId: session.id,
                     amount: session.amount_total! / 100,
                     payment_method_types: session.payment_method_types[0],
+                    serviceName: session.metadata?.serviceName,
                 };
 
-                // Option 1: Send as JSON (Recommended - cleaner approach)
                 const response = await fetch(
                     `${process.env.BLACK_MONOLITH_PUBLIC_URL}/api/stripe/AddPayment`,
                     {
@@ -55,18 +53,18 @@ export async function POST(req: Request) {
                             data: paymentData,
                             agentRequestTableId: session.metadata?.agentRequestTableId || "",
                             paymentTableId: session.metadata?.paymentTableId || "",
+                            userTableId: session.metadata?.userTableId || "",
                         }),
                     }
                 );
 
-                // Handle the response
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
-                    console.error("❌ AddPayment API failed:", {
+                    console.error("AddPayment API failed:", {
                         status: response.status,
                         error: errorData
                     });
-                    
+
                     return NextResponse.json({
                         received: true,
                         paymentProcessed: false,
@@ -76,7 +74,7 @@ export async function POST(req: Request) {
                 }
 
                 const paymentResult = await response.json();
-                console.log("✅ Payment processed successfully:", paymentResult);
+                console.log("Payment processed successfully:", paymentResult);
 
                 return NextResponse.json({
                     received: true,
@@ -88,8 +86,7 @@ export async function POST(req: Request) {
 
             case "payment_intent.payment_failed": {
                 const intent = event.data.object as Stripe.PaymentIntent;
-                console.error("❌ Payment failed:", intent.id);
-                
+
                 return NextResponse.json({
                     received: true,
                     paymentFailed: true,
@@ -98,17 +95,16 @@ export async function POST(req: Request) {
             }
 
             default:
-                console.log(`Unhandled event type: ${event.type}`);
-                return NextResponse.json({ 
+                return NextResponse.json({
                     received: true,
                     eventType: event.type,
                     handled: false
                 });
         }
     } catch (error: any) {
-        console.error("❌ Webhook processing error:", error);
-        
-        return NextResponse.json({ 
+        console.error(" Webhook processing error:", error);
+
+        return NextResponse.json({
             received: true,
             error: error.message,
             processed: false

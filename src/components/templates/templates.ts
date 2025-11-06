@@ -1110,3 +1110,187 @@ export const GovernmentBodyServiceRequestTemplate = `
     </table>
   </body>
 `;
+
+export const CompanyServicePaymentSuccessTemplate = `
+   <body style="font-family:'Segoe UI', Arial, sans-serif; background:#f5f7fa; margin:0; padding:40px;">
+    <table align="center" width="100%" cellpadding="0" cellspacing="0"
+      style="max-width:600px; background:#ffffff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.08); overflow:hidden;">
+
+      <!-- HEADER -->
+      <tr>
+        <td style="background:#0d1117; text-align:center; padding:22px 12px;">
+          <h2 style="color:#ffffff; margin:0;">Payment Successful</h2>
+          <p style="color:#9ca3af; margin:6px 0 0; font-size:14px;">
+            The company <strong>{{companyName}}</strong> has successfully completed a payment for <strong>{{serviceName}}</strong>.
+          </p>
+        </td>
+      </tr>
+
+      <!-- BODY -->
+      <tr>
+        <td style="padding:28px 36px;">
+          <p style="color:#333; font-size:15px; margin:0 0 14px;">
+            Hi <strong>{{agentName}}</strong>,
+          </p>
+          <p style="color:#444; font-size:15px; line-height:1.7; margin:0 0 22px;">
+            The following company has completed their payment for the requested service. Below are the transaction and company details for your reference.
+          </p>
+
+          <!-- DETAILS CARD -->
+          <div style="background:#f3f4f6; border:1px solid #e0e0e0; border-radius:8px; padding:18px 20px; margin:0 0 24px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="font-size:15px;">
+              <tr>
+                <td style="width:42%; color:#444; font-weight:600;">Company Name</td>
+                <td style="color:#111;">{{companyName}}</td>
+              </tr>
+              <tr>
+                <td style="padding-top:10px; color:#444; font-weight:600;">Amount Paid</td>
+                <td style="padding-top:10px; color:#111;">{{amountPaid}}</td>
+              </tr>
+              <tr>
+                <td style="padding-top:10px; color:#444; font-weight:600;">Payment Date</td>
+                <td style="padding-top:10px; color:#111;">{{paymentDate}}</td>
+              </tr>
+              <tr>
+                <td style="padding-top:10px; color:#444; font-weight:600;">Company Email</td>
+                <td style="padding-top:10px; color:#111;">{{companyEmail}}</td>
+              </tr>
+                         <tr>
+                <td style="padding-top:10px; color:#444; font-weight:600;">Company Website</td>
+                <td style="padding-top:10px; color:#111;">{{companyWebsite}}</td>
+              </tr>
+                                       <tr>
+                <td style="padding-top:10px; color:#444; font-weight:600;">Company Address</td>
+                <td style="padding-top:10px; color:#111;">{{companyAddress}}</td>
+              </tr>
+              <tr>
+                <td style="padding-top:10px; color:#444; font-weight:600;">Contact Person Name</td>
+                <td style="padding-top:10px; color:#111;">{{contactPersonName}}</td>
+              </tr> 
+          
+                            <tr>
+                <td style="padding-top:10px; color:#444; font-weight:600;">Contact Person Phone</td>
+                <td style="padding-top:10px; color:#111;">{{contactPersonPhone}}</td>
+              </tr> 
+                                          <tr>
+                <td style="padding-top:10px; color:#444; font-weight:600;">Business Type</td>
+                <td style="padding-top:10px; color:#111;">{{businessType}}</td>
+              </tr> 
+              
+            </table>
+          </div>
+
+          <p style="color:#444; font-size:14px; line-height:1.7; margin:0 0 18px;">
+            You can now proceed with the next steps in the service fulfillment process. To view complete details or manage this payment, click the link below:
+          </p>
+
+          <!-- CTA -->
+          <div style="text-align:center; margin:26px 0;">
+            <a href="{{dashboardUrl}}"
+               style="display:inline-block; background:#1f6feb; color:#ffffff; text-decoration:none; font-weight:600; padding:12px 28px; border-radius:6px;">
+              View Payment Details
+            </a>
+          </div>
+
+          <!-- THANKS -->
+          <p style="color:#444; font-size:14px; line-height:1.7; text-align:center; margin:8px 0 0;">
+            Thanks & Regards,<br />
+            <strong>The Black Monolith Team</strong>
+          </p>
+        </td>
+      </tr>
+
+      <!-- FOOTER -->
+      <tr>
+        <td style="background:#f0f2f5; padding:15px 25px; text-align:center; font-size:12px; color:#888;">
+          Need help? Contact
+          <a href="mailto:{{blackMonolithEmail}}" style="color:#1f6feb; text-decoration:none;">
+            {{blackMonolithEmail}}
+          </a>.
+        </td>
+      </tr>
+    </table>
+  </body>
+`;
+
+export const CompanyPaymentSuccessTemplate = `
+  <body style="font-family:'Segoe UI', Arial, sans-serif; background:#f5f7fa; margin:0; padding:40px;">
+    <table align="center" width="100%" cellpadding="0" cellspacing="0"
+      style="max-width:600px; background:#ffffff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.08); overflow:hidden;">
+
+      <!-- HEADER -->
+      <tr>
+        <td style="background:#0d1117; text-align:center; padding:22px 12px;">
+          <h2 style="color:#ffffff; margin:0;">Payment Successful</h2>
+          <p style="color:#9ca3af; margin:6px 0 0; font-size:14px;">
+            Thank you, <strong>{{companyName}}</strong> — your payment for <strong>{{serviceName}}</strong> has been received successfully.
+          </p>
+        </td>
+      </tr>
+
+      <!-- BODY -->
+      <tr>
+        <td style="padding:28px 36px;">
+          <p style="color:#333; font-size:15px; margin:0 0 14px;">
+            Dear <strong>{{contactPersonName}}</strong>,
+          </p>
+          <p style="color:#444; font-size:15px; line-height:1.7; margin:0 0 22px;">
+            We’re pleased to inform you that your payment has been successfully processed for the selected service. 
+            Our agent, <strong>{{agentName}}</strong>, will review your details and contact you shortly for the next steps.
+          </p>
+
+          <!-- DETAILS CARD -->
+          <div style="background:#f3f4f6; border:1px solid #e0e0e0; border-radius:8px; padding:18px 20px; margin:0 0 24px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="font-size:15px;">
+              <tr>
+                <td style="width:42%; color:#444; font-weight:600;">Service Name</td>
+                <td style="color:#111;">{{serviceName}}</td>
+              </tr>
+              <tr>
+                <td style="padding-top:10px; color:#444; font-weight:600;">Amount Paid</td>
+                <td style="padding-top:10px; color:#111;">{{amountPaid}}</td>
+              </tr>
+              <tr>
+                <td style="padding-top:10px; color:#444; font-weight:600;">Payment Date</td>
+                <td style="padding-top:10px; color:#111;">{{paymentDate}}</td>
+              </tr>
+              <tr>
+                <td style="padding-top:10px; color:#444; font-weight:600;">Assigned Agent</td>
+                <td style="padding-top:10px; color:#111;">{{agentName}}</td>
+              </tr>
+            </table>
+          </div>
+
+          <p style="color:#444; font-size:14px; line-height:1.7; margin:0 0 18px;">
+            You can view your service request and payment details anytime by visiting your company dashboard:
+          </p>
+
+          <!-- CTA -->
+          <div style="text-align:center; margin:26px 0;">
+            <a href="{{dashboardUrl}}"
+               style="display:inline-block; background:#1f6feb; color:#ffffff; text-decoration:none; font-weight:600; padding:12px 28px; border-radius:6px;">
+              View Dashboard
+            </a>
+          </div>
+
+          <!-- THANKS -->
+          <p style="color:#444; font-size:14px; line-height:1.7; text-align:center; margin:8px 0 0;">
+            Thank you for choosing our services.<br />
+            <strong>The Black Monolith Team</strong>
+          </p>
+        </td>
+      </tr>
+
+      <!-- FOOTER -->
+      <tr>
+        <td style="background:#f0f2f5; padding:15px 25px; text-align:center; font-size:12px; color:#888;">
+          Need assistance? Contact us at
+          <a href="mailto:{{blackMonolithEmail}}" style="color:#1f6feb; text-decoration:none;">
+            {{blackMonolithEmail}}
+          </a>.
+        </td>
+      </tr>
+    </table>
+  </body>
+`;
+
