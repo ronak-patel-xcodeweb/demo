@@ -35,26 +35,27 @@ export async function POST(req: Request) {
                 const session = event.data.object as Stripe.Checkout.Session;
                 console.log("✅ Checkout complete:", session.id);
 
-                // Create FormData to match the AddPayment API expectations
-                const formData = new FormData();
-                
+                // Prepare the payload
                 const paymentData = {
                     Id: session.metadata?.paymentForUserId,
                     PaymentId: session.id,
                     amount: session.amount_total! / 100,
                     payment_method_types: session.payment_method_types[0],
                 };
-                
-                formData.append("data", JSON.stringify(paymentData));
-                formData.append("agentRequestTableId", session.metadata?.agentRequestTableId || "");
-                formData.append("paymentTableId", session.metadata?.paymentTableId || "");
 
-                // Call the AddPayment API
+                // Option 1: Send as JSON (Recommended - cleaner approach)
                 const response = await fetch(
                     `${process.env.BLACK_MONOLITH_PUBLIC_URL}/api/stripe/AddPayment`,
                     {
                         method: "POST",
-                        body: formData,
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            data: paymentData,
+                            agentRequestTableId: session.metadata?.agentRequestTableId || "",
+                            paymentTableId: session.metadata?.paymentTableId || "",
+                        }),
                     }
                 );
 
@@ -71,7 +72,7 @@ export async function POST(req: Request) {
                         paymentProcessed: false,
                         error: errorData.error || "Failed to process payment",
                         sessionId: session.id
-                    }, { status: 200 }); // Return 200 to acknowledge webhook
+                    }, { status: 200 });
                 }
 
                 const paymentResult = await response.json();
@@ -107,7 +108,6 @@ export async function POST(req: Request) {
     } catch (error: any) {
         console.error("❌ Webhook processing error:", error);
         
-        // Still return 200 to acknowledge receipt, but log the error
         return NextResponse.json({ 
             received: true,
             error: error.message,
