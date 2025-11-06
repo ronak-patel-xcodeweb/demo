@@ -197,3 +197,21 @@ html{
       0%, 100% {opacity: 0.7;}
       50% {opacity: 0;}
     }
+
+
+    /* global.css */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #3a3e45;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+.PhoneInputCountrySelect {
+  background-color: lab(7.78201% -.0000149012 0);
+}

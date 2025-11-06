@@ -34,7 +34,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-, "src/app/api/datatables/route.js"  ],
+, "src/app/api/datatables/route.js", "src/app/api/getAgentByCountry"  ],
   "exclude": [
     "node_modules"
   ]

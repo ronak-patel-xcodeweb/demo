@@ -30,8 +30,8 @@ export default function ConfirmationAlert({ title, showDialog,handleClose }: Con
                         <AlertDialogTitle>{title}</AlertDialogTitle>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel onClick={()=>handleClose(false)}>No</AlertDialogCancel>
-                        <AlertDialogAction onClick={()=>handleClose(true)}>Yes</AlertDialogAction>
+                        <AlertDialogCancel onClick={()=>handleClose(false)} className='cursor-pointer'>No</AlertDialogCancel>
+                        <AlertDialogAction onClick={()=>handleClose(true)} className='cursor-pointer'>Yes</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

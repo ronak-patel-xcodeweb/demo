@@ -1,7 +1,4 @@
 "use client";
-
-import { Settings, CircleHelp, Search, Database, ClipboardList, File, Command } from "lucide-react";
-
 import {
   Sidebar,
   SidebarContent,

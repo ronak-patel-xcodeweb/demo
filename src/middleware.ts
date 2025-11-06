@@ -6,15 +6,17 @@ const ROUTE_PERMISSIONS = {
   Company: ['/dashboard', '/agent-requests',
     '/services'
   ],
-  Agent: ['/service-requests', '/agent-services'],
+  // Agent: ['/service-requests', '/agent-services'],
+  Agent: ['/service-requests'],
   Admin: [
-    '/user-management',
     '/registration-management',
-    '/services'
-  ],
-    GovernmentBody: [
+    '/user-management',
     '/services',
-    '/request-info'
+    '/government-requests'
+  ],
+  GovernmentBody: [
+    '/request-info',
+    '/requested-services'
   ]
 }
 
@@ -59,10 +61,12 @@ export const config = {
     '/agent-requests/:path*',
     '/service-requests/:path*',
     '/agent-services/:path*',
-    '/user-management/:path*',
     '/registration-management/:path*',
+    '/user-management/:path*',
     '/services/:path*',
     '/request-info/:path*',
+    '/requested-services/:path*',
+    '/government-requests/:path*',
     '/login',
     '/signup',
   ]

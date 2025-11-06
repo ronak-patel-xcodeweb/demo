@@ -9,7 +9,7 @@ export async function PATCH(request: NextRequest) {
 
         const resUser = await APIRequest('PATCH', `tables/${tableId}/records`, data);
 
-        return NextResponse.json(resUser || { message: "User Record update successfully" }, { status: 200 });
+        return NextResponse.json(resUser || { message: "Data update successfully" }, { status: 200 });
     } catch (error: any) {
         console.error("Error:", error);
         return NextResponse.json({ error: error.message || error }, { status: 500 });

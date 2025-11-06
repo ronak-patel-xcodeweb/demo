@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
@@ -38,7 +38,6 @@ export default function ChildLayout({ children, session }: { children: ReactNode
   }, [dataTables])
 
   const fetchServices = async () => {
-    console.log(dataTables)
     const tableId = dataTables?.find((t: any) => t?.table_name === "Services")?.id;
     const res = await fetch(`/api/getData?tableId=${tableId}`);
     const data = await res.json()

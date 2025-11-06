@@ -3,7 +3,8 @@ import {
   LayoutDashboard,
   type LucideIcon,
   User,
-  UserPlus
+  UserPlus,
+  Banknote
 } from "lucide-react";
 
 export interface NavSubItem {
@@ -50,16 +51,28 @@ export const sidebarItems: NavGroup[] = [
         role: ["Company"]
       },
       {
-        title: "Incoming Requests",
+        title: "Dashboard",
         url: "/service-requests",
         icon: LayoutDashboard,
         role: ["Agent"]
       },
       {
-        title: "My Services",
-        url: "/agent-services",
-        icon: LayoutDashboard,
+        title: "Stripe Account",
+        url: "/stripe-account",
+        icon: Banknote,
         role: ["Agent"]
+      },
+      // {
+      //   title: "My Services",
+      //   url: "/agent-services",
+      //   icon: LayoutDashboard,
+      //   role: ["Agent"]
+      // },
+      {
+        title: "Registration Management",
+        url: "/registration-management",
+        icon: User,
+        role: ["Admin"]
       },
       {
         title: "User Management",
@@ -68,22 +81,27 @@ export const sidebarItems: NavGroup[] = [
         role: ["Admin"]
       },
       {
-        title: "Registration Management",
-        url: "/registration-management",
+        title: "Requested Services",
+        url: "/government-requests",
         icon: User,
         role: ["Admin"]
+      },
+      {
+        title: "Service Request",
+        url: "/request-info",
+        icon: LayoutDashboard,
+        role: ["GovernmentBody"]
+      }, {
+        title: "Requested Services",
+        url: "/requested-services",
+        icon: LayoutDashboard,
+        role: ["GovernmentBody"]
       },
       {
         title: "Services",
         url: "/services",
         icon: LayoutDashboard,
-        role: ["Admin", "Company", "GovernmentBody"]
-      },
-      {
-        title: "Request Info",
-        url: "/request-info",
-        icon: LayoutDashboard,
-        role: ["GovernmentBody"]
+        role: ["Admin", "Company"]
       },
     ],
   }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import 'ol/ol.css'
 import Map from 'ol/Map'
 import View from 'ol/View'
@@ -19,85 +19,40 @@ import { VerifyButton } from '../svgs/verifed-button'
 import Feature from 'ol/Feature';
 import Overlay from 'ol/Overlay'
 import { Button } from '../ui/button'
-import { Dialog, DialogClose, DialogContent, DialogTitle } from '../ui/dialog'
+import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import AllAgentServices from '../agentservices/agentservicestype'
 import { toast } from 'sonner'
-const agentCountyWise = [
-  {
-    country: 'India', agentsData: [{
-      name: 'Jessica',
-      age: '32',
-      sex: 'Female',
-      requested: false
-    },
-    {
-      name: 'Mark',
-      age: '35',
-      sex: 'Male',
-      requested: false
-    },
-    {
-      name: 'David',
-      age: '30',
-      sex: 'Male',
-      requested: false
-    }]
-  },
-  {
-    country: 'United States of America', agentsData: [{
-      name: 'James',
-      age: '32',
-      sex: 'Male',
-      requested: false
-    },
-    {
-      name: 'Michael',
-      age: '35',
-      sex: 'Male',
-      requested: false
-    },
-    {
-      name: 'Jennifer',
-      age: '30',
-      sex: 'Female',
-      requested: false
-    }]
-  },
-  {
-    country: 'United Kingdom', agentsData: [{
-      name: 'Mary',
-      age: '32',
-      sex: 'Female',
-      requested: false
-    },
-    {
-      name: 'Patricia',
-      age: '35',
-      sex: 'Male',
-      requested: false
-    },
-    {
-      name: 'John',
-      age: '30',
-      sex: 'Male',
-      requested: false
-    }]
-  },
-]
-const TacticalMapView = ({ themeColor, mapColor }: any) => {
+import { DataTableContext, ServicesContext } from '../context/DataTableContext'
+import { useSession } from 'next-auth/react'
+import SpinnerComponent from '../spinner/spinner'
+import { Separator } from '../ui/separator'
+
+const TacticalMapView = ({ themeColor, mapColor, agent }: any) => {
+
+  const { allServices, setAllServices } = useContext(ServicesContext);
+
+
+  const { dataTables, setDataTables } = useContext(DataTableContext);
+  const { data: session }: any = useSession();
+
+  const [agentCountyWise, SetAgentCountyWise] = useState<any>();
+  useEffect(() => {
+    SetAgentCountyWise(agent);
+  }, [agent])
   const mapRef = useRef<any>()
   const [selectedCountry, setSelectedCountry] = useState<any>(null)
   const [popoverOpen, setPopoverOpen] = useState(false)
   const [anchorPos, setAnchorPos] = useState<{ x: number; y: number } | null>(null)
   const [serviceDialogOpen, setServiceDialogOpen] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const getRandomColor = () =>
     `#${Math.floor(Math.random() * 16777215).toString(16)}`
 
   useEffect(() => {
     const countryBorderColors: Record<string, string> = {};
-    agentCountyWise.forEach(country => {
+    agentCountyWise?.forEach((country: any) => {
       countryBorderColors[country.country] = getRandomColor();
     });
 
@@ -147,7 +102,10 @@ const TacticalMapView = ({ themeColor, mapColor }: any) => {
     });
 
     const tooltipEl = document.createElement('div');
-    tooltipEl.className = 'absolute bg-black text-white px-2 py-1 rounded text-sm pointer-events-none';
+    tooltipEl.className = `
+  absolute bg-black/90 text-white text-xs font-medium rounded-lg shadow-lg 
+  px-3 py-2 pointer-events-none border border-white/20 whitespace-nowrap
+`;
     tooltipEl.style.display = 'none';
     mapRef.current.appendChild(tooltipEl);
 
@@ -161,7 +119,7 @@ const TacticalMapView = ({ themeColor, mapColor }: any) => {
     map.on('singleclick', evt => {
       map.forEachFeatureAtPixel(evt.pixel, feature => {
         const name = feature.get('name')
-        const agentData = agentCountyWise.find(agentCountyWise => agentCountyWise.country === name)
+        const agentData = agentCountyWise?.find((agentCountyWise: any) => agentCountyWise?.country === name)
         if (agentData) {
           const pixel = evt.pixel
           setAnchorPos({ x: pixel[0], y: pixel[1] })
@@ -188,41 +146,88 @@ const TacticalMapView = ({ themeColor, mapColor }: any) => {
         if (f !== hoverFeature) f.setStyle(styleFunction(f, false));
       });
 
+      const mapTarget = map.getTargetElement();
+
       if (hoverFeature) {
         const name = hoverFeature.get('name');
-        const agentData = agentCountyWise.find(c => c.country === name);
+        const agentData = agentCountyWise?.find((c: any) => c.country === name);
         const agentCount = agentData?.agentsData.length || 0;
 
-        tooltipEl.innerHTML = `${agentCount} Agent${agentCount !== 1 ? 's' : ''}`;
+        tooltipEl.innerHTML = `${agentCount} Agent${agentCount === 1 ? '' : 's'}`;
         tooltipEl.style.display = 'block';
         tooltipOverlay.setPosition(evt.coordinate);
+
+        mapTarget.style.cursor = 'pointer';
       } else {
         tooltipEl.style.display = 'none';
+        mapTarget.style.cursor = '';
       }
     });
+
 
 
     return () => map.setTarget(undefined);
-  }, []);
+  }, [agentCountyWise]);
 
 
-  const requestSend: any = (data: string, serviceName: string) => {
-    const updatedAgents = selectedCountry?.agentsData.map((agent: any) => {
-      if (agent.name === data) {
-        return { ...agent, serviceName: serviceName, requested: true };
-      }
-      return agent;
+  const requestSend = async (agentId: string, agentName: string, requestData: any) => {
+
+    setIsLoading(true)
+    const agentRequestTableId = dataTables.find((t: any) => t?.table_name === "AgentRequests")?.id;
+    const scheduleTableId = dataTables.find((t: any) => t?.table_name === "Schedule")?.id;
+    const userTableId = dataTables.find((t: any) => t?.table_name === "User")?.id;
+
+
+    const payloadRequestData = {
+      agentRequestTableId,
+      scheduleTableId,
+      agentId: agentId,
+      serviceId: requestData.serviceId,
+      serviceName: getServiceName(requestData.serviceId),
+      meetingType: requestData.meetingType,
+      message: requestData.message,
+      companyId: session?.user?.id,
+      companyName: session?.user?.name,
+      agentName
+    }
+    const formData = new FormData();
+    formData.append("requestData", JSON.stringify(payloadRequestData));
+    formData.append("agentRequestTableId", agentRequestTableId);
+    formData.append("scheduleTableId", scheduleTableId);
+    formData.append("userTableId", userTableId);
+
+
+    setServiceDialogOpen(false);
+    const response = await fetch("/api/AddRequests", {
+      method: "POST",
+      body: formData,
     });
 
-    setSelectedCountry((prev: any) => ({
-      ...prev,
-      agentsData: updatedAgents,
-    }));
-    toast.success(`You have successfully sent a request to ${data} for ${serviceName}.`)
-    setServiceDialogOpen(false);
-    setSelectedAgent([]);
+    if (response.ok) {
+      setIsLoading(false);
+      const updatedAgents = selectedCountry?.agentsData.map((agent: any) => {
+        if (agent.Id === agentId) {
+          return { ...agent, serviceName: requestData.serviceName, message: requestData.message, meetingType: requestData.meetingType, requested: true };
+        }
+        return agent;
+      });
+
+      setSelectedCountry((prev: any) => ({
+        ...prev,
+        agentsData: updatedAgents,
+      }));
+      toast.success(`You have successfully sent a request to ${agentName} for ${requestData.serviceName}.`)
+      setSelectedAgent([]);
+    }
+    else {
+      setIsLoading(false)
+    }
   };
 
+  const getServiceName = (id: any) => {
+    const data = allServices.find((data: any) => data?.Id == id)
+    return data?.ServiceName
+  }
 
   return (
     <>
@@ -256,7 +261,7 @@ const TacticalMapView = ({ themeColor, mapColor }: any) => {
                     </div>
                   </div>
                   <div>
-                    <h5 className='mb-3 text-center'>Agents details
+                    <h5 className='text-center'>Agents details
                     </h5>
                     {selectedCountry.agentsData.length > 0 && (
                       <div className='max-h-[20rem] w-full overflow-hidden overflow-y-auto' >
@@ -264,16 +269,11 @@ const TacticalMapView = ({ themeColor, mapColor }: any) => {
                           <div key={index} className='border-b border-black m-2 '>
                             <div className="flex items-center justify-between gap-5">
                               <div>
-                                <div>
-                                  Agent Name: {agent?.name}
-                                </div>
-                                <div>
-                                  Agent age: {agent?.age}
-                                </div>
-                                <div>
-                                  Agent sex: {agent?.sex}
+                                <div className="break-words max-w-[20rem]">
+                                  {agent?.name}
                                 </div>
                               </div>
+
                               <div>
                                 <Tooltip>
                                   <TooltipTrigger>
@@ -282,31 +282,22 @@ const TacticalMapView = ({ themeColor, mapColor }: any) => {
                                       setSelectedAgent(agent)
                                     }} className='cursor-pointer'>
                                       {agent?.requested == false && (<RequestButtonSvg />)}
+                                    </div>
+                                    <div>
                                       {agent?.requested == true && (<>
                                         <div className='flex justify-end'>
                                           <VerifyButton />
-                                        </div>
-                                        <p>{agent?.serviceName}</p>
-                                      </>)}
+                                        </div>                                      </>)}
                                     </div>
                                   </TooltipTrigger>
                                   <TooltipContent>
                                     {agent?.requested == false && (<p>Request an Agent</p>)}
-                                    {agent?.requested == true && (<p>Requested</p>)}
+                                    {agent?.requested == true && (<p>{getServiceName(agent?.serviceName) ?? agent?.serviceName}</p>)}
                                   </TooltipContent>
                                 </Tooltip>
                               </div>
                             </div>
-                            <div >
-                              <Dialog open={serviceDialogOpen} onOpenChange={setServiceDialogOpen}>
-                                <DialogContent className='w-full h-[95%] overflow-auto'>
-                                  <div className="flex justify-between items-center mb-3">
-                                    <DialogTitle>Available Services for {selectedAgent?.name}</DialogTitle>
-                                  </div>
-                                  <AllAgentServices onRequest={(data) => requestSend(selectedAgent.name, data)} />
-                                </DialogContent>
-                              </Dialog>
-                            </div>
+
                           </div>
                         ))}
                       </div>
@@ -318,11 +309,22 @@ const TacticalMapView = ({ themeColor, mapColor }: any) => {
 
           </div>
         )}
-
+        {isLoading && (
+          <SpinnerComponent />
+        )}
+        <div >
+          <Dialog open={serviceDialogOpen} onOpenChange={setServiceDialogOpen}>
+            <DialogContent className='w-full h-[95%] overflow-auto'>
+              <DialogHeader>        <DialogTitle>Available Services for {selectedAgent?.name}</DialogTitle>
+              </DialogHeader>
+              <Separator />
+              <AllAgentServices onRequest={(data) => requestSend(selectedAgent.Id, selectedAgent?.name, data)} />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
     </>
   )
 }
 
 export default TacticalMapView
-
