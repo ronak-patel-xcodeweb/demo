@@ -35,35 +35,83 @@ export async function POST(req: Request) {
                 const session = event.data.object as Stripe.Checkout.Session;
                 console.log("✅ Checkout complete:", session.id);
 
-                const payload = {
+                // Create FormData to match the AddPayment API expectations
+                const formData = new FormData();
+                
+                const paymentData = {
                     Id: session.metadata?.paymentForUserId,
                     PaymentId: session.id,
                     amount: session.amount_total! / 100,
                     payment_method_types: session.payment_method_types[0],
-                    agentRequestTableId: session.metadata?.agentRequestTableId,
-                    paymentTableId: session.metadata?.paymentTableId,
                 };
+                
+                formData.append("data", JSON.stringify(paymentData));
+                formData.append("agentRequestTableId", session.metadata?.agentRequestTableId || "");
+                formData.append("paymentTableId", session.metadata?.paymentTableId || "");
 
-                await fetch(`${process.env.BLACK_MONOLITH_PUBLIC_URL}/api/stripe/AddPayment`, {
-                    method: "POST",
-                    body: JSON.stringify(payload),
+                // Call the AddPayment API
+                const response = await fetch(
+                    `${process.env.BLACK_MONOLITH_PUBLIC_URL}/api/stripe/AddPayment`,
+                    {
+                        method: "POST",
+                        body: formData,
+                    }
+                );
+
+                // Handle the response
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error("❌ AddPayment API failed:", {
+                        status: response.status,
+                        error: errorData
+                    });
+                    
+                    return NextResponse.json({
+                        received: true,
+                        paymentProcessed: false,
+                        error: errorData.error || "Failed to process payment",
+                        sessionId: session.id
+                    }, { status: 200 }); // Return 200 to acknowledge webhook
+                }
+
+                const paymentResult = await response.json();
+                console.log("✅ Payment processed successfully:", paymentResult);
+
+                return NextResponse.json({
+                    received: true,
+                    paymentProcessed: true,
+                    result: paymentResult,
+                    sessionId: session.id
                 });
-                break;
             }
 
             case "payment_intent.payment_failed": {
                 const intent = event.data.object as Stripe.PaymentIntent;
                 console.error("❌ Payment failed:", intent.id);
-                break;
+                
+                return NextResponse.json({
+                    received: true,
+                    paymentFailed: true,
+                    intentId: intent.id
+                });
             }
 
             default:
                 console.log(`Unhandled event type: ${event.type}`);
+                return NextResponse.json({ 
+                    received: true,
+                    eventType: event.type,
+                    handled: false
+                });
         }
-
-        return NextResponse.json({ received: true });
     } catch (error: any) {
-        console.error("Webhook error:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error("❌ Webhook processing error:", error);
+        
+        // Still return 200 to acknowledge receipt, but log the error
+        return NextResponse.json({ 
+            received: true,
+            error: error.message,
+            processed: false
+        }, { status: 200 });
     }
 }
